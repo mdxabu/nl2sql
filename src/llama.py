@@ -10,6 +10,6 @@ def run():
             'content': user_input,
         },
     ])
-    print(response['message']['content'])
+    print("Generating SQL Query...")
 
     print(response.message.content)
