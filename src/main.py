@@ -1,6 +1,7 @@
-import llama
+from Llama import run
+
 def main():
-    llama.run()
+    run()
 
 
 if __name__ == "__main__":
