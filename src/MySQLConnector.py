@@ -2,40 +2,55 @@ import mysql.connector
 import yaml
 from mysql.connector import Error
 
-def getConnection():
+def getConnection(database_name=None):
     try:
-        # Load configuration from the YAML file
         with open('./config.yml', 'r') as file:
-            config = yaml.safe_load(file)
+            config = yaml.safe_load(file)['database']  # Assuming config has database section
 
-        # Attempt to connect to the database
-        connection = mysql.connector.connect(
-            host=config['host'],
-            port=config['port'],
-            user=config['user'],
-            password=config['password'],
-            charset=config['charset'],
-            connection_timeout=config['timeout']
-        )
+        connection_params = {
+            'host': config['host'],
+            'port': config['port'],
+            'user': config['user'],
+            'password': config['password'],
+            'charset': config['charset']
+        }
+        
+        if database_name:
+            connection_params['database'] = database_name
 
-        if connection.is_connected():
-            print("Connected to MySQL server")
-        return connection.cursor()
+        return mysql.connector.connect(**connection_params)
 
-    except Error as err:
-        print(f"Error: {err}")
+    except Error as e:
+        print(f"Error connecting to MySQL: {e.msg} ({e.errno})")
         return None
 
-def execute_query(query):
-    cursor = getConnection()
-    if cursor:
-        try:
+
+def execute_query(query, multi=False):
+    try:
+        connection = getConnection()
+        if not connection:
+            print("Failed to establish a connection.")
+            return None  # Return early if no connection is established
+
+        cursor = connection.cursor()
+        
+        if multi:
+            # Execute multiple statements
+            for result in cursor.execute(query, multi=True):
+                if result.with_rows:
+                    print(result.fetchall())
+        else:
             cursor.execute(query)
-            result = cursor.fetchall()
-            return result
-        except Error as err:
-            print(f"Error executing query: {err}")
-        finally:
-            cursor.connection.close()
-    else:
-        print("Unable to connect to the database.")
+            if cursor.with_rows:
+                return cursor.fetchall()
+            
+        connection.commit()
+        return True
+
+    except Error as e:
+        print(f"Error executing query: {e}")
+        return None
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close()

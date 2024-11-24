@@ -6,22 +6,29 @@ from ProcessedOutput import processingOutput
 
 def run():
     user_input = input("Please enter your question: ")
+    
 
-    print("\n\nGenerating SQL Query...\n\n")
-
+    
+    # Add context for database creation
+    prompt = f"""Generate SQL query for: {user_input}
+    If this is a database creation request, include all necessary CREATE DATABASE and USE DATABASE and CREATE TABLE statements.
+    Make sure to use valid MySQL syntax."""
+    
     response: ChatResponse = chat(model='llama-nl2sql', messages=[{
         'role': 'user',
-        'content': user_input,
+        'content': prompt,
     }])
 
-    # Process the output from the chat model
-    processed_output = processingOutput(response.message.content)
-    print(f"Generated SQL Query: {processed_output}")
+    processed_output = response.message.content
+    print(f"Generated SQL Query:\n{processed_output}")
 
-    # Execute the generated query
-    result = execute_query(processed_output)
+    # Process the output to remove unnecessary formatting
+    cleaned_output = processingOutput(processed_output)
+
+    # Execute queries with multi=True to handle multiple statements
+    result = execute_query(cleaned_output, multi=True)
     
     if result:
-        print(f"Query Result: {result}")
+        print("Database operations completed successfully.")
     else:
-        print("No result returned or query failed.")
+        print("Error during database operations.")
