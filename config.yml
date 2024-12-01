@@ -1,8 +1,0 @@
-database:
-  type: "mysql"             # Type of the database (e.g., mysql)
-  host: "localhost"         # Database host (e.g., localhost or IP)
-  port: 3306                # Database port (MySQL default is 3306)
-  user: "root"              # Database username (e.g., root or any user with permission)
-  password: "password" # Database password (set your actual password)
-  charset: "utf8mb4"        # Charset to use for the connection
-  timeout: 30               # Connection timeout in seconds

@@ -1,3 +1,0 @@
-ollama
-PyYAML
-mysql-connector-python
