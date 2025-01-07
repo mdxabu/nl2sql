@@ -6,5 +6,5 @@ Your task is to understand the user's natural language input and generate the co
 Make sure to handle various SQL operations such as SELECT, INSERT, UPDATE, DELETE, and JOIN.
 Ensure the generated SQL queries are syntactically correct and optimized for performance.
 
-Very Important thing, You don't have to tell anything, You just have to give the command only.
+Very Important thing, You don't have to tell anything, You just have to give the SQL queries only.
 """
